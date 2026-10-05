@@ -1254,9 +1254,15 @@ input[aria-invalid="true"] { border-color: var(--bad); }
     wrapMix(x, '¡Gracias por ser parte de quienes hacen posible brindar el mejor servicio!', 1200, 32).forEach(function (l, i) { x.textAlign = 'center'; x.fillText(l, cx, yT + i * 44); });
     /* técnico */
     try {
-      var svg = tech({ wave: true, standalone: true });
-      var img = await loadImg('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+      var svg = tech({ wave: true, standalone: true }).replace(/<image [^>]*>/, '');
+      var img = null;
+      try { img = await loadImg('data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)))); }
+      catch (e1) {
+        var url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }));
+        try { img = await loadImg(url); } finally { setTimeout(function () { URL.revokeObjectURL(url); }, 3000); }
+      }
       x.drawImage(img, 1560, 360, 330, 616);
+      try { var logoW = await loadImg(LOGOW); x.drawImage(logoW, 1560 + 125 * 1.1, 360 + 161 * 1.1, 55, 17.2); } catch (e2) {}
     } catch (e) {}
     /* sello */
     var sy = 1200;
